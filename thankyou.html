@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Thank you — Little Sprouts</title>
+<style>
+  :root{--accent:#ff7aa2;--muted:#6b7280}
+  *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  body{margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;background:linear-gradient(180deg,#fff,#f6fbff);color:#0f172a;padding:24px}
+  .card{background:#fff;padding:28px;border-radius:14px;box-shadow:0 12px 30px rgba(16,24,40,0.08);max-width:720px;width:100%}
+  h1{margin:0 0 6px 0}
+  .muted{color:var(--muted)}
+  .order{margin-top:14px;padding:12px;border-radius:10px;background:#fbfbff;border:1px solid #eef6ff}
+  .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:800}
+  a.button-link{display:inline-block;text-decoration:none}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="font-size:40px">🎉</div>
+      <div>
+        <h1>Thank you for your purchase!</h1>
+        <div class="muted">Your order has been placed successfully.</div>
+      </div>
+    </div>
+
+    <div id="summary" class="order">
+      Loading order summary...
+    </div>
+
+    <div style="margin-top:16px;display:flex;gap:10px">
+      <a class="button-link" href="index.html"><button class="btn">Back to Home</button></a>
+      <button class="btn" style="background:#fff;border:1px solid #eee;color:#333" onclick="downloadReceipt()">Download Receipt</button>
+    </div>
+  </div>
+
+<script>
+function formatINR(n){ return '₹' + Number(n).toFixed(0); }
+function renderOrder(){
+  const raw = localStorage.getItem('lastOrder');
+  if(!raw){ document.getElementById('summary').innerHTML = '<div class="muted">No recent order found. </div>'; return; }
+  const order = JSON.parse(raw);
+  const itemsHtml = order.items.map(it=>`<div style="display:flex;justify-content:space-between;padding:6px 0"><div><strong>${it.name}</strong> <div class="muted" style="font-size:13px">${it.desc} — qty ${it.qty}</div></div><div style="font-weight:800">${formatINR(it.price * it.qty)}</div></div>`).join('');
+  const html = `
+    <div style="font-weight:800">Order ID: ${order.id}</div>
+    <div class="muted" style="font-size:13px">Placed on: ${new Date(order.createdAt).toLocaleString()}</div>
+    <div style="margin-top:10px">${itemsHtml}</div>
+    <hr>
+    <div style="display:flex;justify-content:space-between"><div class="muted">Subtotal</div><div>${formatINR(order.subtotal)}</div></div>
+    <div style="display:flex;justify-content:space-between"><div class="muted">Tax</div><div>${formatINR(order.tax)}</div></div>
+    <div style="display:flex;justify-content:space-between"><div class="muted">Shipping</div><div>${formatINR(order.shipping)}</div></div>
+    <div style="display:flex;justify-content:space-between;font-weight:900;margin-top:8px"> <div>Total</div><div>${formatINR(order.grand)}</div></div>
+    <div style="margin-top:10px" class="muted">Shipping to: ${order.customer.name}, ${order.customer.address}, ${order.customer.city} — ${order.customer.zip}</div>
+  `;
+  document.getElementById('summary').innerHTML = html;
+}
+
+function downloadReceipt(){
+  const raw = localStorage.getItem('lastOrder');
+  if(!raw){ alert('No order found'); return; }
+  const order = JSON.parse(raw);
+  let txt = `Order Receipt - ${order.id}\n\n`;
+  order.items.forEach(it=> txt += `${it.name} x ${it.qty} — ₹${it.price * it.qty}\n`);
+  txt += `\nSubtotal: ₹${order.subtotal}\nTax: ₹${order.tax}\nShipping: ₹${order.shipping}\nTotal: ₹${order.grand}\n\nShipping to:\n${order.customer.name}\n${order.customer.address}\n${order.customer.city} - ${order.customer.zip}\n\nThank you for shopping with Little Sprouts!`;
+  const blob = new Blob([txt], {type: 'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `${order.id}_receipt.txt`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+renderOrder();
+</script>
+</body>
+</html>
