@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Products — Little Sprouts</title>
+<style>
+  :root{--bg:#fff7fb;--card:#fff;--accent:#ff7aa2;--muted:#6b7280;--shadow:0 8px 20px rgba(16,24,40,0.06)}
+  *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  body{margin:0;background:linear-gradient(180deg,#fff,#f6fbff);color:#0f172a}
+  header{padding:18px 6%;display:flex;justify-content:space-between;align-items:center}
+  .brand{font-weight:800}
+  .container{padding:18px 6%}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+  .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);transition:transform .18s}
+  .card:hover{transform:translateY(-6px)}
+  img{width:100%;height:180px;object-fit:cover;border-radius:10px}
+  .price{font-weight:800}
+  .filters{display:flex;gap:12px;align-items:center;margin-bottom:16px}
+  .btn{background:var(--accent);color:#fff;border:none;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700}
+  footer{padding:20px 6%;color:var(--muted);font-size:13px}
+  @media(max-width:640px){img{height:140px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Little Sprouts</div>
+  <nav>
+    <a href="index.html" style="margin-right:12px;color:#6b7280;text-decoration:none">Home</a>
+    <a href="checkout.html" style="color:#6b7280;text-decoration:none">Cart</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2 style="margin:0">All Products</h2>
+    <div class="filters">
+      <input id="search" placeholder="Search products..." style="padding:8px;border-radius:10px;border:1px solid #e6eef8">
+      <button class="btn" onclick="clearCart()">Clear Cart</button>
+    </div>
+  </div>
+  <div class="grid" id="list"></div>
+</div>
+
+<footer>© <span id="year"></span> Little Sprouts</footer>
+
+<script>
+const products = [
+  {id:1,name:"Dino T-shirt",desc:"Soft cotton tee with dino print",price:349,img:"https://via.placeholder.com/400x300?text=Dino+Tshirt"},
+  {id:2,name:"Flower Dress",desc:"Flowy summer dress",price:799,img:"https://via.placeholder.com/400x300?text=Flower+Dress"},
+  {id:3,name:"Cozy Jacket",desc:"Warm & comfy jacket",price:1299,img:"https://via.placeholder.com/400x300?text=Cozy+Jacket"},
+  {id:4,name:"Star Backpack",desc:"Lightweight backpack for school",price:699,img:"https://via.placeholder.com/400x300?text=Star+Backpack"},
+  {id:5,name:"Cute Cap",desc:"Adjustable cap with prints",price:249,img:"https://via.placeholder.com/400x300?text=Cute+Cap"},
+  {id:6,name:"Cartoon Socks Pack",desc:"3-pack colorful socks",price:199,img:"https://via.placeholder.com/400x300?text=Socks+Pack"}
+];
+
+function render(){
+  const grid = document.getElementById('list'); grid.innerHTML='';
+  products.forEach(p=>{
+    const c = document.createElement('div'); c.className='card';
+    c.innerHTML = `
+      <img src="${p.img}" alt="${p.name}">
+      <div style="margin-top:10px">
+        <div style="font-weight:800">${p.name}</div>
+        <div style="color:var(--muted);font-size:13px;margin-top:6px">${p.desc}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+          <div class="price">₹${p.price}</div>
+          <div>
+            <button class="btn" onclick="addToCart(${p.id})" style="padding:8px 10px">Add to Cart</button>
+            <button style="margin-left:8px;padding:8px 10px;border-radius:10px;border:1px solid #e6eef8;background:#fff" onclick="buyNow(${p.id})">Buy Now</button>
+          </div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(c);
+  });
+}
+
+function addToCart(id){
+  const p = products.find(x=>x.id===id);
+  if(!p) return;
+  let cart = JSON.parse(localStorage.getItem('cart')||'[]');
+  const exists = cart.find(i=>i.id===id);
+  if(exists) exists.qty += 1; else cart.push({...p, qty:1});
+  localStorage.setItem('cart', JSON.stringify(cart));
+  alert('Added to cart');
+}
+
+function buyNow(id){
+  const p = products.find(x=>x.id===id);
+  if(!p) return;
+  localStorage.setItem('cart', JSON.stringify([{...p, qty:1}]));
+  window.location.href = 'checkout.html';
+}
+
+function clearCart(){ localStorage.removeItem('cart'); alert('Cart cleared'); }
+
+document.getElementById('year').textContent = new Date().getFullYear();
+render();
+
+document.getElementById('search').addEventListener('input',e=>{
+  const q = e.target.value.toLowerCase();
+  const filtered = products.filter(p=>p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
+  const grid = document.getElementById('list'); grid.innerHTML='';
+  filtered.forEach(p=>{
+    const c = document.createElement('div'); c.className='card';
+    c.innerHTML = `<img src="${p.img}" alt="${p.name}"><div style="margin-top:10px"><div style="font-weight:800">${p.name}</div><div style="color:var(--muted);font-size:13px;margin-top:6px">${p.desc}</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><div class="price">₹${p.price}</div><div><button class="btn" onclick="addToCart(${p.id})" style="padding:8px 10px">Add to Cart</button> <button style="margin-left:8px;padding:8px 10px;border-radius:10px;border:1px solid #e6eef8;background:#fff" onclick="buyNow(${p.id})">Buy Now</button></div></div></div>`;
+    grid.appendChild(c);
+  });
+});
+</script>
+</body>
+</html>
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Checkout — Little Sprouts</title>
+<style>
+  :root{--card:#fff;--muted:#6b7280;--accent:#ff7aa2;--shadow:0 8px 24px rgba(16,24,40,0.06)}
+  *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  body{margin:0;background:#f6fbff;color:#0f172a}
+  header{padding:18px 6%;display:flex;justify-content:space-between;align-items:center}
+  .container{padding:18px 6%}
+  .layout{display:grid;grid-template-columns:1fr 360px;gap:20px}
+  .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow)}
+  h2{margin-top:0}
+  .cart-item{display:flex;gap:12px;align-items:center;border-bottom:1px dashed #eef6ff;padding:12px 0}
+  .cart-item img{width:72px;height:72px;object-fit:cover;border-radius:8px}
+  .muted{color:var(--muted);font-size:13px}
+  label{display:block;font-weight:700;margin-top:10px;font-size:13px}
+  input,select,textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #e6eef8}
+  .small{font-size:13px;color:var(--muted)}
+  .totals{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .totals .row{display:flex;justify-content:space-between}
+  .btn{background:var(--accent);color:#fff;border:none;padding:12px;border-radius:10px;cursor:pointer;font-weight:800;width:100%}
+  .secondary{background:transparent;border:1px solid #e6eef8;color:var(--muted);padding:10px;border-radius:10px;cursor:pointer}
+  @media(max-width:900px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <div style="font-weight:800">Checkout — Little Sprouts</div>
+  <div>
+    <a href="index.html" style="color:var(--muted);text-decoration:none;margin-right:12px">Home</a>
+    <a href="products.html" style="color:var(--muted);text-decoration:none">Products</a>
+  </div>
+</header>
+
+<div class="container">
+  <div class="layout">
+    <div>
+      <div class="card" id="cartCard">
+        <h2>Cart Summary</h2>
+        <div id="cartList" class="small muted">Loading cart...</div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="secondary" onclick="continueShopping()">Continue Shopping</button>
+          <button class="secondary" onclick="clearCart()">Clear Cart</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h2>Shipping & Billing</h2>
+        <form id="orderForm" onsubmit="placeOrder(event)">
+          <label>Full Name<input id="name" required></label>
+          <label>Email<input id="email" type="email" required></label>
+          <label>Phone<input id="phone" required></label>
+          <label>Address<textarea id="address" rows="3" required></textarea></label>
+          <label>City<input id="city" required></label>
+          <label>State<input id="state" required></label>
+          <label>Postal Code<input id="zip" required></label>
+          <label>Apply Coupon (optional)<input id="coupon" placeholder="e.g. FIRST10"></label>
+          <div style="margin-top:10px" class="small muted">We accept Credit/Debit, UPI & PayPal</div>
+
+          <label style="margin-top:12px">Payment Method
+            <select id="paymentMethod" required onchange="onPaymentChange()">
+              <option value="card">Credit / Debit Card</option>
+              <option value="upi">UPI</option>
+              <option value="paypal">PayPal</option>
+            </select>
+          </label>
+
+          <div id="paymentFields" style="margin-top:8px">
+            <!-- dynamic -->
+            <div id="cardFields">
+              <label>Card Number<input id="cardNumber" placeholder="1234 1234 1234 1234"></label>
+              <div style="display:flex;gap:8px">
+                <label style="flex:1">Expiry<input id="cardExp" placeholder="MM/YY"></label>
+                <label style="flex:1">CVV<input id="cardCvv" placeholder="123"></label>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <button type="submit" class="btn">Place Order — Proceed to Pay</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <aside>
+      <div class="card">
+        <h3>Order Summary</h3>
+        <div class="totals">
+          <div class="row"><div class="small muted">Subtotal</div><div id="subtotal">₹0</div></div>
+          <div class="row"><div class="small muted">Tax (5%)</div><div id="tax">₹0</div></div>
+          <div class="row"><div class="small muted">Shipping</div><div id="shipping">₹0</div></div>
+          <hr>
+          <div class="row" style="font-weight:900;font-size:18px"><div>Total</div><div id="grand">₹0</div></div>
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn" onclick="placeOrderDirect()">Proceed to Pay</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const SHIPPING = 50;
+const TAX_RATE = 0.05;
+
+function readCart(){
+  try{
+    return JSON.parse(localStorage.getItem('cart') || '[]');
+  }catch(e){ return [];}
+}
+
+function saveCart(cart){ localStorage.setItem('cart', JSON.stringify(cart)); renderCart(); }
+
+function formatINR(n){ return '₹' + Number(n).toFixed(0); }
+
+function renderCart(){
+  const list = document.getElementById('cartList');
+  const cart = readCart();
+  if(!cart.length){ list.innerHTML = '<div style="padding:12px 0">Your cart is empty. <a href="products.html">Shop now</a></div>'; updateTotals(); return; }
+  list.innerHTML = '';
+  cart.forEach((it, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `
+      <img src="${it.img}" alt="${it.name}">
+      <div style="flex:1">
+        <div style="font-weight:800">${it.name}</div>
+        <div class="muted">${it.desc}</div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <div class="small muted">Qty</div>
+          <input type="number" min="1" value="${it.qty}" style="width:70px;padding:6px;border-radius:8px;border:1px solid #eef6ff" onchange="updateQty(${idx},this.value)">
+          <div style="margin-left:auto;font-weight:800">₹${it.price * it.qty}</div>
+        </div>
+      </div>
+      <div style="margin-left:12px"><button class="secondary" onclick="removeItem(${idx})">Remove</button></div>
+    `;
+    list.appendChild(div);
+  });
+  updateTotals();
+}
+
+function updateQty(i, val){
+  const cart = readCart();
+  cart[i].qty = Math.max(1, parseInt(val)||1);
+  saveCart(cart);
+}
+
+function removeItem(i){
+  let cart = readCart(); cart.splice(i,1); saveCart(cart);
+}
+
+function updateTotals(){
+  const cart = readCart();
+  const subtotal = cart.reduce((s,it)=>s + (it.price * it.qty), 0);
+  const tax = Math.round(subtotal * TAX_RATE);
+  const shipping = cart.length ? SHIPPING : 0;
+  const grand = subtotal + tax + shipping;
+  document.getElementById('subtotal').textContent = formatINR(subtotal);
+  document.getElementById('tax').textContent = formatINR(tax);
+  document.getElementById('shipping').textContent = formatINR(shipping);
+  document.getElementById('grand').textContent = formatINR(grand);
+}
+
+function continueShopping(){ window.location.href='products.html'; }
+function clearCart(){ localStorage.removeItem('cart'); renderCart(); alert('Cart cleared'); }
+
+function onPaymentChange(){
+  const v = document.getElementById('paymentMethod').value;
+  const container = document.getElementById('paymentFields');
+  if(v==='card'){
+    container.innerHTML = `<div id="cardFields"><label>Card Number<input id="cardNumber" placeholder="1234 1234 1234 1234"></label><div style="display:flex;gap:8px"><label style="flex:1">Expiry<input id="cardExp" placeholder="MM/YY"></label><label style="flex:1">CVV<input id="cardCvv" placeholder="123"></label></div></div>`;
+  } else if(v==='upi'){
+    container.innerHTML = `<label>UPI ID<input id="upiId" placeholder="name@bank"></label>`;
+  } else {
+    container.innerHTML = `<div class="small muted">You will be redirected to PayPal to complete payment.</div>`;
+  }
+}
+
+function placeOrderDirect(){
+  // same as submit; gather minimal info and redirect to thankyou
+  document.getElementById('orderForm').requestSubmit();
+}
+
+function placeOrder(e){
+  if(e) e.preventDefault();
+  const cart = readCart();
+  if(!cart.length){ alert('Cart is empty'); return; }
+  const form = {
+    name: document.getElementById('name').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    address: document.getElementById('address').value.trim(),
+    city: document.getElementById('city').value.trim(),
+    state: document.getElementById('state').value.trim(),
+    zip: document.getElementById('zip').value.trim(),
+    paymentMethod: document.getElementById('paymentMethod').value,
+    coupon: document.getElementById('coupon').value.trim()
+  };
+  // compute totals
+  const subtotal = cart.reduce((s,it)=>s + (it.price * it.qty), 0);
+  const tax = Math.round(subtotal * TAX_RATE);
+  const shipping = cart.length ? SHIPPING : 0;
+  const grand = subtotal + tax + shipping;
+
+  // create order object
+  const order = {
+    id: 'LS' + Date.now(),
+    items: cart,
+    subtotal, tax, shipping, grand,
+    customer: form,
+    createdAt: new Date().toISOString()
+  };
+
+  // store last order, clear cart
+  localStorage.setItem('lastOrder', JSON.stringify(order));
+  localStorage.removeItem('cart');
+
+  // simulate payment processing then redirect
+  window.location.href = 'thankyou.html';
+}
+
+// Initial render
+onPaymentChange();
+renderCart();
+</script>
+</body>
+</html>
