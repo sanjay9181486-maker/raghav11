@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Little Sprouts — Kids Accessories</title>
+<style>
+  :root{
+    --bg:#f7fbff; --card:#ffffff; --accent:#ff7aa2; --muted:#6b7280;
+    --shadow: 0 6px 18px rgba(16,24,40,0.06);
+    --glass: rgba(255,255,255,0.6);
+  }
+  *{box-sizing:border-box;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  body{margin:0;background:linear-gradient(180deg,#f2f9ff 0%,var(--bg) 100%);color:#0f172a;}
+  header{display:flex;align-items:center;justify-content:space-between;padding:20px 6%;gap:20px;}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,#ffd1df,#ffa6d5);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:20px;box-shadow:var(--shadow)}
+  nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-weight:600}
+  .hero{display:grid;grid-template-columns:1fr 480px;gap:32px;align-items:center;padding:40px 6%;}
+  .hero-card{background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--card));padding:28px;border-radius:18px;box-shadow:var(--shadow)}
+  h1{margin:0;font-size:36px}
+  p.lead{color:var(--muted);margin-top:8px}
+  .cta{margin-top:18px;display:flex;gap:12px}
+  .btn{background:var(--accent);border:none;color:white;padding:12px 16px;border-radius:10px;font-weight:700;cursor:pointer;box-shadow:0 6px 14px rgba(255,122,162,0.18)}
+  .btn.secondary{background:transparent;color:var(--accent);border:2px solid rgba(255,122,162,0.12)}
+  .hero-media{border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+  .hero-media img{display:block;width:100%;height:100%;object-fit:cover}
+  .products{padding:28px 6% 60px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+  .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s}
+  .card:hover{transform:translateY(-6px);box-shadow:0 14px 30px rgba(16,24,40,0.12)}
+  .card img{width:100%;border-radius:10px;object-fit:cover;height:160px}
+  .meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+  .price{font-weight:800;color:#0f172a}
+  .desc{color:var(--muted);font-size:13px;margin-top:6px}
+  footer{padding:28px 6%;color:var(--muted);font-size:14px;border-top:1px solid rgba(15,23,42,0.04)}
+  @media (max-width:880px){.hero{grid-template-columns:1fr;}.hero-media{order:-1}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">LS</div>
+    <div>
+      <div style="font-weight:800;font-size:16px">Little Sprouts</div>
+      <div style="font-size:12px;color:var(--muted)">Cute accessories for tiny explorers</div>
+    </div>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="checkout.html">Cart</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-card">
+    <h1>Delightful accessories for playful kids</h1>
+    <p class="lead">Bright, comfy & safe — curated collection of shirts, dresses, backpacks and more. Free shipping on orders above ₹1500.</p>
+    <div class="cta">
+      <button class="btn" onclick="location.href='products.html'">Shop Collection</button>
+      <button class="btn secondary" onclick="location.href='checkout.html'">View Cart</button>
+    </div>
+
+    <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;">
+      <div style="background:var(--glass);padding:10px;border-radius:12px;">
+        <strong>Secure Payments</strong><div style="font-size:13px;color:var(--muted)">UPI, Cards, PayPal</div>
+      </div>
+      <div style="background:var(--glass);padding:10px;border-radius:12px;">
+        <strong>24/7 Support</strong><div style="font-size:13px;color:var(--muted)">We're here to help</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-media">
+    <img src="https://via.placeholder.com/700x500?text=Kids+Accessories+Collection" alt="hero image"/>
+  </div>
+</section>
+
+<section class="products">
+  <h2 style="margin:0 0 14px 0">Featured Products</h2>
+  <div class="grid" id="productGrid"></div>
+</section>
+
+<footer>
+  © <span id="year"></span> Little Sprouts — Made with ❤️ for kids. &nbsp; &nbsp; <a href="mailto:hello@littlesprouts.example">hello@littlesprouts.example</a>
+</footer>
+
+<script>
+const products = [
+  {id:1,name:"Dino T-shirt",desc:"Soft cotton tee with dino print",price:349,img:"https://via.placeholder.com/400x300?text=Dino+Tshirt"},
+  {id:2,name:"Flower Dress",desc:"Flowy summer dress",price:799,img:"https://via.placeholder.com/400x300?text=Flower+Dress"},
+  {id:3,name:"Cozy Jacket",desc:"Warm & comfy jacket",price:1299,img:"https://via.placeholder.com/400x300?text=Cozy+Jacket"},
+  {id:4,name:"Star Backpack",desc:"Lightweight backpack for school",price:699,img:"https://via.placeholder.com/400x300?text=Star+Backpack"},
+  {id:5,name:"Cute Cap",desc:"Adjustable cap with prints",price:249,img:"https://via.placeholder.com/400x300?text=Cute+Cap"},
+  {id:6,name:"Cartoon Socks Pack",desc:"3-pack colorful socks",price:199,img:"https://via.placeholder.com/400x300?text=Socks+Pack"}
+];
+
+function renderGrid(){
+  const grid = document.getElementById('productGrid');
+  products.forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'card';
+    div.innerHTML = `
+      <img src="${p.img}" alt="${p.name}">
+      <div style="margin-top:10px">
+        <div style="font-weight:800">${p.name}</div>
+        <div class="desc">${p.desc}</div>
+        <div class="meta">
+          <div class="price">₹${p.price}</div>
+          <div>
+            <button class="btn" onclick="buyNow(${p.id})" style="padding:8px 10px;font-size:13px">Buy Now</button>
+          </div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function buyNow(id){
+  const selected = products.find(p=>p.id===id);
+  if(!selected) return;
+  // set cart in localStorage (single product purchase replaces cart)
+  const cart = [{...selected, qty:1}];
+  localStorage.setItem('cart', JSON.stringify(cart));
+  window.location.href = 'checkout.html';
+}
+
+document.getElementById('year').textContent = new Date().getFullYear();
+renderGrid();
+</script>
+</body>
+</html>
